@@ -1,6 +1,6 @@
 
 class Citizen{
-    constructor(first_name, last_name, age, gender, money, health, happiness, popularity, job, stats){
+    constructor(first_name, last_name, age, gender, money, health, happiness, popularity, job, stats, resources){
         this.first_name = first_name,
         this.last_name = last_name,
         this.age = age,
@@ -10,7 +10,8 @@ class Citizen{
         this.happiness = happiness,
         this.popularity = popularity,
         this.job = job,
-        this.stats = stats
+        this.stats = stats,
+        this.resources = resources
     }
 }
 
@@ -21,7 +22,7 @@ male_first = ["Liam", "Noah", "Oliver", "Elijah", "James", "William", "Benjamin"
 female_first = ["Olivia", "Emma", "Charlotte", "Amelia", "Ava", "Sophia", "Isabella", "Mia", "Evelyn", "Harper"]
 last = ["Smith", "Johnson", "Williams", "Brown", "Jones", "Garcia", "Miller", "Davis", "Rodriguez", "Martinez"]
 genders = ["male", "female"]
-jobs = ["farmer", "lumberjack", "miner"]
+jobs = ["farmer", "lumberjack", "furnisher", "miner"]
 
 population = []
 
@@ -46,7 +47,10 @@ function generate(number){
             perception: Math.floor(Math.random() * 10),
             intelligence: Math.floor(Math.random() * 10),
         }
-        generated_result = new Citizen(citizen_first,citizen_last,citizen_age,citizen_gender,citizen_money,citizen_health,citizen_happiness,citizen_popularity, citizen_job, citizen_stats)
+        citizen_resources = {
+            logs: 0
+        }
+        generated_result = new Citizen(citizen_first,citizen_last,citizen_age,citizen_gender,citizen_money,citizen_health,citizen_happiness,citizen_popularity, citizen_job, citizen_stats, citizen_resources)
         population.push(generated_result)
     }
 }
@@ -77,12 +81,30 @@ function render(){
 function events(num){
     events_text = ""
     for (let i=0; i< num; i++){
-        selected = population[Math.floor(Math.random() * population.length)]
-        if (selected.job == "lumberjack"){
-            events_text += selected.first_name +" "+selected.last_name+" chopped some logs.<br>"
+        roll = Math.floor(Math.random() * 2)
+        if (roll == 0){
+            selected = population[Math.floor(Math.random() * population.length)]
+            if (selected.job == "lumberjack"){
+                logs_cut = 1 * selected.stats["strength"]
+                selected.resources["logs"] += logs_cut
+                events_text += selected.first_name +" "+selected.last_name+" chopped "+logs_cut+" logs.<br>"
         } 
+        } else if (roll == 1){
+            selected = population[Math.floor(Math.random() * population.length)]
+            if (selected.job == "furnisher"){
+                if (selected.resources["logs"] == 0){
+                    selected2 = population[Math.floor(Math.random() * population.length)]
+                    if (selected2.resources["logs"] > 0){
+                        selected.money -= 10 // note, need money check in more advanced version -- also non-fixed price
+                        selected.resources["logs"] += 1
+                        selected2.resources["logs"] -= 1
+                        events_text += selected.first_name+" "+selected.last_name+" traded money for logs with "+selected2.first_name+" "+selected2.last_name+"<br>"
+                    }
+                }
+        }
     }
     document.getElementById("events").innerHTML=events_text;
+}
 }
 
 function year(){
