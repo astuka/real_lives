@@ -78,6 +78,7 @@ function render(){
     document.getElementById("population").innerHTML=population_text;
 }
 
+//events that run during the year check
 function events(num){
     events_text = ""
     for (let i=0; i< num; i++){
